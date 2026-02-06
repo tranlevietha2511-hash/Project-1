@@ -3,218 +3,531 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sao cũng được</title>
-  <meta name="description" content="Một trang web tối giản với dòng chữ 'sao cũng được'." />
-
+  <title>Clinical Tools – eGFR / Scores</title>
   <style>
     :root{
-      --bg1: #0b1020;
-      --bg2: #0a1a3a;
-      --fg:  rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.68);
-      --card: rgba(255,255,255,.06);
-      --stroke: rgba(255,255,255,.12);
-      --glow1: rgba(124, 92, 255, .55);
-      --glow2: rgba(0, 212, 255, .45);
+      --bg1:#0b1020; --bg2:#0a1a3a; --fg:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.68); --card:rgba(255,255,255,.06);
+      --stroke:rgba(255,255,255,.12); --shadow: 0 18px 60px rgba(0,0,0,.38);
+      --accent1: rgba(124,92,255,.75); --accent2: rgba(0,212,255,.6);
+      --danger: rgba(255,99,132,.9); --ok: rgba(60,220,130,.9);
     }
-
-    *{ box-sizing: border-box; }
-    html, body{ height: 100%; }
+    *{box-sizing:border-box}
     body{
-      margin: 0;
-      color: var(--fg);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      overflow: hidden;
+      margin:0; color:var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       background:
         radial-gradient(1200px 700px at 15% 20%, rgba(124,92,255,.18), transparent 60%),
         radial-gradient(900px 600px at 85% 30%, rgba(0,212,255,.14), transparent 60%),
         linear-gradient(140deg, var(--bg1), var(--bg2));
+      min-height:100vh;
     }
-
-    /* subtle moving noise */
-    .noise{
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: .08;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
-      animation: drift 10s linear infinite;
-      mix-blend-mode: overlay;
-    }
-    @keyframes drift{
-      from{ transform: translate3d(0,0,0); }
-      to{ transform: translate3d(-120px,-120px,0); }
-    }
-
-    /* floating blobs */
-    .blob{
-      position: absolute;
-      width: 420px;
-      height: 420px;
-      border-radius: 50%;
-      filter: blur(40px);
-      opacity: .75;
-      transform: translate(-50%,-50%);
-      animation: float 10s ease-in-out infinite;
-    }
-    .blob.one{ left: 18%; top: 65%; background: var(--glow1); animation-duration: 11s; }
-    .blob.two{ left: 78%; top: 35%; background: var(--glow2); animation-duration: 13s; }
-    @keyframes float{
-      0%,100%{ transform: translate(-50%,-50%) scale(1); }
-      50%{ transform: translate(-50%,-52%) scale(1.08); }
-    }
-
-    .wrap{
-      position: relative;
-      height: 100%;
-      display: grid;
-      place-items: center;
-      padding: 32px 18px;
-    }
-
-    .card{
-      width: min(820px, 92vw);
-      padding: clamp(22px, 4vw, 44px);
-      border-radius: 28px;
+    .wrap{max-width:1100px; margin:0 auto; padding:22px 14px 60px;}
+    header{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      padding:14px 14px; border:1px solid var(--stroke); border-radius:18px;
       background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border: 1px solid var(--stroke);
-      box-shadow:
-        0 18px 60px rgba(0,0,0,.38),
-        0 0 0 1px rgba(255,255,255,.05) inset;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      position: relative;
-      overflow: hidden;
+      box-shadow: var(--shadow); backdrop-filter: blur(12px);
     }
-
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      background:
-        radial-gradient(500px 180px at 20% 0%, rgba(124,92,255,.18), transparent 60%),
-        radial-gradient(500px 180px at 80% 100%, rgba(0,212,255,.14), transparent 60%);
-      opacity: .9;
-      pointer-events:none;
-    }
-
-    h1{
-      margin: 0;
-      font-size: clamp(44px, 7vw, 86px);
-      line-height: 1.02;
-      letter-spacing: -0.04em;
-      text-align: center;
-      position: relative;
-      text-shadow: 0 10px 40px rgba(0,0,0,.45);
-    }
-
-    .subtitle{
-      margin: 14px auto 0;
-      max-width: 56ch;
-      text-align: center;
-      font-size: clamp(14px, 2vw, 16px);
-      color: var(--muted);
-      position: relative;
-    }
-
-    .chips{
-      margin-top: 22px;
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-      position: relative;
-    }
-    .chip{
-      border: 1px solid rgba(255,255,255,.14);
+    .brand{display:flex; flex-direction:column; gap:2px}
+    .brand h1{margin:0; font-size:18px; letter-spacing:-.02em}
+    .brand p{margin:0; font-size:12px; color:var(--muted)}
+    .top-actions{display:flex; gap:10px; align-items:center;}
+    .pill{
+      font-size:12px; color:rgba(255,255,255,.75);
+      border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      color: rgba(255,255,255,.78);
-      user-select: none;
+      padding:8px 10px; border-radius:999px;
+      display:flex; gap:8px; align-items:center;
     }
+    button{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      color: var(--fg);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      transition: transform .08s ease, background .2s ease;
+    }
+    button:hover{ background: rgba(255,255,255,.12); }
+    button:active{ transform: translateY(1px); }
 
-    .footer{
-      margin-top: 18px;
-      text-align: center;
-      color: rgba(255,255,255,.55);
-      font-size: 12px;
-      position: relative;
+    .grid{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
     }
-
-    /* nice hover tilt */
-    @media (hover:hover){
-      .card{
-        transform-style: preserve-3d;
-        transition: transform .25s ease, box-shadow .25s ease;
-      }
-      .card:hover{
-        box-shadow:
-          0 22px 70px rgba(0,0,0,.46),
-          0 0 0 1px rgba(255,255,255,.06) inset;
-      }
+    @media(min-width: 980px){
+      .grid{ grid-template-columns: 1.05fr .95fr; }
     }
-
-    /* accessibility: reduce motion */
-    @media (prefers-reduced-motion: reduce){
-      .noise, .blob{ animation: none !important; }
-      .card{ transition: none !important; }
+    .card{
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border-radius:18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      overflow:hidden;
     }
+    .card .hd{
+      padding:14px 14px 10px;
+      display:flex; align-items:flex-end; justify-content:space-between; gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .card .hd h2{margin:0; font-size:15px; letter-spacing:-.02em}
+    .card .hd .sub{margin:0; font-size:12px; color:var(--muted)}
+    .card .bd{padding:14px;}
+    .row{display:grid; grid-template-columns: 1fr; gap:10px; margin-bottom:12px;}
+    @media(min-width:560px){
+      .row.two{grid-template-columns: 1fr 1fr;}
+      .row.three{grid-template-columns: 1fr 1fr 1fr;}
+    }
+    label{font-size:12px; color:rgba(255,255,255,.8); display:block; margin-bottom:6px;}
+    input, select{
+      width:100%;
+      padding:11px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10,15,30,.35);
+      color: var(--fg);
+      outline:none;
+    }
+    input::placeholder{color:rgba(255,255,255,.35)}
+    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;}
+    .result{
+      margin-top:10px;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+    }
+    .big{font-size:20px; font-weight:650; letter-spacing:-.02em}
+    .muted{color:var(--muted); font-size:12px; line-height:1.45}
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      font-size:12px; color:rgba(255,255,255,.8);
+      margin-right:8px; margin-top:8px;
+    }
+    .ok{border-color: rgba(60,220,130,.35)}
+    .warn{border-color: rgba(255,191,0,.35)}
+    .bad{border-color: rgba(255,99,132,.35)}
+    .divider{height:1px; background: rgba(255,255,255,.10); margin:12px 0;}
+    .chk{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:10px; border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      margin:8px 0;
+    }
+    .chk input{width:auto; margin-top:2px;}
+    .note{font-size:12px; color:rgba(255,255,255,.72); line-height:1.45}
+    .small{font-size:11px; color:rgba(255,255,255,.55)}
+    .hide{display:none !important;}
+    .login-box{
+      display:grid; gap:10px;
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+    }
+    .login-title{font-weight:650; letter-spacing:-.02em}
   </style>
 </head>
-
 <body>
-  <div class="noise"></div>
-  <div class="blob one"></div>
-  <div class="blob two"></div>
-
-  <main class="wrap">
-    <section class="card" id="card">
-      <h1>sao cũng được</h1>
-      <p class="subtitle">
-        Một trang web tối giản, đẹp nhẹ nhàng — chỉ để nhắc rằng đôi khi… “sao cũng được”.
-      </p>
-
-      <div class="chips" aria-hidden="true">
-        <span class="chip">Minimal</span>
-        <span class="chip">Gradient</span>
-        <span class="chip">Glass</span>
-        <span class="chip">Smooth</span>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>Clinical Tools</h1>
+        <p>eGFR (MDRD/CK) • HAS-BLED • CHA₂DS₂-VASc (demo)</p>
       </div>
+      <div class="top-actions">
+        <div class="pill" id="statusPill">🔒 Chưa đăng nhập</div>
+        <button id="logoutBtn" class="hide">Đăng xuất</button>
+      </div>
+    </header>
 
-      <div class="footer">© <span id="y"></span> — made with calm vibes</div>
-    </section>
-  </main>
+    <div class="grid">
+      <!-- LEFT: Login + Renal -->
+      <section class="card">
+        <div class="hd">
+          <div>
+            <h2>Đăng nhập</h2>
+            <p class="sub">Demo front-end (không có backend)</p>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="login-box" id="loginBox">
+            <div class="login-title">Nhập tài khoản để mở công cụ</div>
+            <div class="row two">
+              <div>
+                <label>Tên đăng nhập</label>
+                <input id="user" placeholder="vd: admin" autocomplete="username" />
+              </div>
+              <div>
+                <label>Mật khẩu</label>
+                <input id="pass" type="password" placeholder="vd: 1234" autocomplete="current-password" />
+              </div>
+            </div>
+            <div class="actions">
+              <button id="loginBtn">Đăng nhập</button>
+              <button id="fillDemoBtn" type="button">Điền demo</button>
+            </div>
+            <div class="small">Gợi ý: demo mặc định <b>admin / 1234</b>. Khi muốn “thật”, bạn cần backend (Supabase/Auth, v.v.).</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div id="toolsLocked" class="result">
+            <div class="big">🔐 Vui lòng đăng nhập để dùng công cụ.</div>
+            <div class="muted">Sau đăng nhập, các bảng tính sẽ hiện ra ở cột phải và bên dưới.</div>
+          </div>
+
+          <div id="renalCard" class="hide">
+            <div class="divider"></div>
+            <div class="login-title">Tính độ lọc cầu thận</div>
+            <p class="note">
+              Chọn đơn vị creatinine đúng. MDRD dùng “Scr mg/dL”. Nếu nhập µmol/L sẽ tự đổi.
+            </p>
+
+            <div class="row three">
+              <div>
+                <label>Tuổi (năm)</label>
+                <input id="age" type="number" min="0" step="1" placeholder="vd: 65" />
+              </div>
+              <div>
+                <label>Giới</label>
+                <select id="sex">
+                  <option value="male">Nam</option>
+                  <option value="female">Nữ</option>
+                </select>
+              </div>
+              <div>
+                <label>Chủng tộc (MDRD)</label>
+                <select id="race">
+                  <option value="non_black">Không phải Black</option>
+                  <option value="black">Black</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row three">
+              <div>
+                <label>Cân nặng (kg) – dùng cho CK</label>
+                <input id="wt" type="number" min="0" step="0.1" placeholder="vd: 60" />
+              </div>
+              <div>
+                <label>Creatinine huyết thanh</label>
+                <input id="scr" type="number" min="0" step="0.01" placeholder="vd: 1.1 (mg/dL) hoặc 97 (µmol/L)" />
+              </div>
+              <div>
+                <label>Đơn vị Creatinine</label>
+                <select id="scrUnit">
+                  <option value="mgdl">mg/dL</option>
+                  <option value="umol">µmol/L</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button id="calcRenalBtn">Tính eGFR/CrCl</button>
+              <button id="resetRenalBtn" type="button">Xoá</button>
+            </div>
+
+            <div class="result" id="renalResult">
+              <div class="muted">Kết quả sẽ hiện ở đây.</div>
+            </div>
+
+            <div class="small">
+              <b>Công thức:</b> MDRD (4-variable, 175) & CK (Cockcroft–Gault). CK trả về <i>mL/min</i> (ước tính CrCl). MDRD trả về <i>mL/min/1.73m²</i>.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: Scores -->
+      <section class="card">
+        <div class="hd">
+          <div>
+            <h2>Thang điểm tim mạch</h2>
+            <p class="sub">CHA₂DS₂-VASc • HAS-BLED</p>
+          </div>
+        </div>
+        <div class="bd">
+          <div id="scoresLocked" class="result">
+            <div class="big">🔐 Đăng nhập để mở CHA₂DS₂-VASc / HAS-BLED</div>
+            <div class="muted">Dữ liệu được tính trên trình duyệt của bạn (không gửi đi đâu).</div>
+          </div>
+
+          <div id="scoresArea" class="hide">
+            <div class="login-title">CHA₂DS₂-VASc</div>
+            <div class="chk"><input type="checkbox" id="c_chf"><div><b>C</b> – Suy tim/EF giảm</div></div>
+            <div class="chk"><input type="checkbox" id="c_htn"><div><b>H</b> – Tăng huyết áp</div></div>
+            <div class="chk"><input type="checkbox" id="c_age75"><div><b>A₂</b> – Tuổi ≥ 75 (2 điểm)</div></div>
+            <div class="chk"><input type="checkbox" id="c_dm"><div><b>D</b> – Đái tháo đường</div></div>
+            <div class="chk"><input type="checkbox" id="c_stroke"><div><b>S₂</b> – Đột quỵ/TIA/Thuyên tắc (2 điểm)</div></div>
+            <div class="chk"><input type="checkbox" id="c_vasc"><div><b>V</b> – Bệnh mạch máu (NMCT/PAD/mảng xơ vữa ĐMC)</div></div>
+            <div class="chk"><input type="checkbox" id="c_age65"><div><b>A</b> – Tuổi 65–74 (1 điểm)</div></div>
+            <div class="chk"><input type="checkbox" id="c_sexf"><div><b>Sc</b> – Giới nữ (1 điểm)</div></div>
+            <div class="actions">
+              <button id="calcChaBtn">Tính CHA₂DS₂-VASc</button>
+              <button id="resetChaBtn" type="button">Xoá</button>
+            </div>
+            <div class="result" id="chaResult">
+              <div class="muted">Kết quả sẽ hiện ở đây.</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="login-title">HAS-BLED</div>
+            <div class="chk"><input type="checkbox" id="h_htn"><div><b>H</b> – HA tâm thu >160 mmHg</div></div>
+            <div class="chk"><input type="checkbox" id="h_renal"><div><b>A</b> – Suy thận (dialysis/ghép/thận nặng)</div></div>
+            <div class="chk"><input type="checkbox" id="h_liver"><div><b>A</b> – Bệnh gan (xơ gan/bilirubin↑ + men gan↑)</div></div>
+            <div class="chk"><input type="checkbox" id="h_stroke"><div><b>S</b> – Tiền sử đột quỵ</div></div>
+            <div class="chk"><input type="checkbox" id="h_bleed"><div><b>B</b> – Tiền sử chảy máu/điểm nguy cơ chảy máu</div></div>
+            <div class="chk"><input type="checkbox" id="h_inr"><div><b>L</b> – INR dao động/khó kiểm soát (nếu dùng VKA)</div></div>
+            <div class="chk"><input type="checkbox" id="h_age"><div><b>E</b> – Tuổi >65</div></div>
+            <div class="chk"><input type="checkbox" id="h_drugs"><div><b>D</b> – Thuốc tăng chảy máu (kháng tiểu cầu/NSAID)</div></div>
+            <div class="chk"><input type="checkbox" id="h_alc"><div><b>D</b> – Rượu (uống nhiều)</div></div>
+
+            <div class="actions">
+              <button id="calcHasBtn">Tính HAS-BLED</button>
+              <button id="resetHasBtn" type="button">Xoá</button>
+            </div>
+            <div class="result" id="hasResult">
+              <div class="muted">Kết quả sẽ hiện ở đây.</div>
+            </div>
+
+            <p class="small">
+              Gợi ý diễn giải thực hành: HAS-BLED ≥3 → nguy cơ chảy máu cao, cần tối ưu yếu tố nguy cơ & theo dõi sát (không có nghĩa “cấm” kháng đông).
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <p class="muted" style="margin-top:14px;">
+      ⚠️ Chỉ mang tính tham khảo/giáo dục. Công thức và ngưỡng có thể khác theo guideline/cơ sở. Hãy đối chiếu bối cảnh bệnh nhân.
+    </p>
+  </div>
 
   <script>
-    // year
-    document.getElementById('y').textContent = new Date().getFullYear();
+    // ===== Helpers =====
+    const $ = (id) => document.getElementById(id);
+    const fmt = (x, d=1) => Number.isFinite(x) ? x.toFixed(d) : "—";
+    const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
 
-    // subtle 3D tilt based on pointer (desktop only)
-    const card = document.getElementById('card');
-    const canHover = window.matchMedia('(hover:hover)').matches;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (canHover && !reduceMotion) {
-      const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-      window.addEventListener('mousemove', (e) => {
-        const r = card.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        const dx = (e.clientX - cx) / (r.width / 2);
-        const dy = (e.clientY - cy) / (r.height / 2);
-
-        const rx = clamp((-dy) * 6, -6, 6);
-        const ry = clamp((dx) * 8, -8, 8);
-
-        card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0)`;
-      });
-
-      window.addEventListener('mouseleave', () => {
-        card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
-      });
+    function scrToMgdl(scr, unit){
+      const v = Number(scr);
+      if(!Number.isFinite(v) || v<=0) return NaN;
+      if(unit === "umol") return v / 88.4;
+      return v;
     }
+
+    // ===== Simple front-end login (demo) =====
+    const DEMO_USER = "admin";
+    const DEMO_PASS = "1234";
+
+    function setAuthed(on){
+      localStorage.setItem("authed", on ? "1" : "0");
+      renderAuth();
+    }
+
+    function isAuthed(){
+      return localStorage.getItem("authed") === "1";
+    }
+
+    function renderAuth(){
+      const authed = isAuthed();
+      $("statusPill").textContent = authed ? "🔓 Đã đăng nhập" : "🔒 Chưa đăng nhập";
+      $("logoutBtn").classList.toggle("hide", !authed);
+
+      $("loginBox").classList.toggle("hide", authed);
+      $("toolsLocked").classList.toggle("hide", authed);
+      $("renalCard").classList.toggle("hide", !authed);
+
+      $("scoresLocked").classList.toggle("hide", authed);
+      $("scoresArea").classList.toggle("hide", !authed);
+    }
+
+    $("loginBtn").addEventListener("click", () => {
+      const u = $("user").value.trim();
+      const p = $("pass").value.trim();
+      if(u === DEMO_USER && p === DEMO_PASS){
+        setAuthed(true);
+      }else{
+        alert("Sai tài khoản/mật khẩu demo. Thử admin / 1234");
+      }
+    });
+
+    $("fillDemoBtn").addEventListener("click", () => {
+      $("user").value = DEMO_USER;
+      $("pass").value = DEMO_PASS;
+    });
+
+    $("logoutBtn").addEventListener("click", () => setAuthed(false));
+
+    // ===== Renal calculations =====
+    // MDRD (4-variable, re-expressed with 175):
+    // eGFR = 175 * (Scr mg/dL)^(-1.154) * (Age)^(-0.203) * (0.742 if female) * (1.212 if Black)
+    function calcMDRD(scr_mgdl, age, sex, race){
+      if(!(scr_mgdl>0 && age>0)) return NaN;
+      let egfr = 175 * Math.pow(scr_mgdl, -1.154) * Math.pow(age, -0.203);
+      if(sex === "female") egfr *= 0.742;
+      if(race === "black") egfr *= 1.212;
+      return egfr; // mL/min/1.73m2
+    }
+
+    // Cockcroft–Gault:
+    // CrCl = ((140 - age) * weight_kg) / (72 * Scr mg/dL) * (0.85 if female)
+    function calcCK(scr_mgdl, age, wt, sex){
+      if(!(scr_mgdl>0 && age>0 && wt>0)) return NaN;
+      let crcl = ((140 - age) * wt) / (72 * scr_mgdl);
+      if(sex === "female") crcl *= 0.85;
+      return crcl; // mL/min
+    }
+
+    function egfrStageTag(egfr){
+      if(!Number.isFinite(egfr)) return {cls:"", text:""};
+      if(egfr >= 90) return {cls:"ok", text:"G1 ≥90"};
+      if(egfr >= 60) return {cls:"ok", text:"G2 60–89"};
+      if(egfr >= 45) return {cls:"warn", text:"G3a 45–59"};
+      if(egfr >= 30) return {cls:"warn", text:"G3b 30–44"};
+      if(egfr >= 15) return {cls:"bad", text:"G4 15–29"};
+      return {cls:"bad", text:"G5 <15"};
+    }
+
+    $("calcRenalBtn").addEventListener("click", () => {
+      const age = Number($("age").value);
+      const sex = $("sex").value;
+      const race = $("race").value;
+      const wt = Number($("wt").value);
+      const scr = $("scr").value;
+      const unit = $("scrUnit").value;
+
+      const scr_mgdl = scrToMgdl(scr, unit);
+      const mdrd = calcMDRD(scr_mgdl, age, sex, race);
+      const ck = calcCK(scr_mgdl, age, wt, sex);
+
+      const tag = egfrStageTag(mdrd);
+
+      $("renalResult").innerHTML = `
+        <div class="big">Kết quả</div>
+        <div style="margin-top:8px;">
+          <span class="tag ${tag.cls}">MDRD eGFR: <b>${fmt(mdrd,1)}</b> mL/min/1.73m²</span>
+          ${tag.text ? `<span class="tag ${tag.cls}">Phân độ: <b>${tag.text}</b></span>` : ``}
+          <span class="tag">CK (Cockcroft–Gault) CrCl: <b>${fmt(ck,1)}</b> mL/min</span>
+        </div>
+        <div class="muted" style="margin-top:10px;">
+          Creatinine quy đổi: <b>${fmt(scr_mgdl,2)}</b> mg/dL.
+          <br/>Lưu ý: CK phụ thuộc cân nặng (thường dùng để chỉnh liều), MDRD chuẩn hoá theo 1.73m².
+        </div>
+      `;
+    });
+
+    $("resetRenalBtn").addEventListener("click", () => {
+      ["age","wt","scr"].forEach(id => $(id).value = "");
+      $("sex").value = "male";
+      $("race").value = "non_black";
+      $("scrUnit").value = "mgdl";
+      $("renalResult").innerHTML = `<div class="muted">Kết quả sẽ hiện ở đây.</div>`;
+    });
+
+    // ===== CHA2DS2-VASc =====
+    function calcCHA(){
+      const a75 = $("c_age75").checked ? 2 : 0;
+      const a65 = $("c_age65").checked ? 1 : 0;
+      // Avoid double-count age: if age75 checked, ignore age65
+      const agePts = a75 ? 2 : a65;
+
+      const score =
+        ( $("c_chf").checked ? 1 : 0 ) +
+        ( $("c_htn").checked ? 1 : 0 ) +
+        agePts +
+        ( $("c_dm").checked ? 1 : 0 ) +
+        ( $("c_stroke").checked ? 2 : 0 ) +
+        ( $("c_vasc").checked ? 1 : 0 ) +
+        ( $("c_sexf").checked ? 1 : 0 );
+
+      return score;
+    }
+
+    function chaText(score){
+      // Keep neutral guidance (guidelines vary): show typical interpretation.
+      if(score <= 0) return {cls:"ok", msg:"Nguy cơ thấp (tham khảo)."};
+      if(score === 1) return {cls:"warn", msg:"Nguy cơ trung gian (tuỳ bối cảnh)."};
+      return {cls:"bad", msg:"Nguy cơ tăng (cân nhắc theo guideline/bối cảnh)."};
+    }
+
+    $("calcChaBtn").addEventListener("click", () => {
+      const s = calcCHA();
+      const t = chaText(s);
+      $("chaResult").innerHTML = `
+        <div class="big">CHA₂DS₂-VASc: <b>${s}</b> điểm</div>
+        <div class="tag ${t.cls}" style="margin-top:10px;">${t.msg}</div>
+        <div class="muted" style="margin-top:10px;">
+          Lưu ý: cách ra quyết định kháng đông phụ thuộc guideline, giới, và yếu tố nguy cơ cụ thể.
+        </div>
+      `;
+    });
+
+    $("resetChaBtn").addEventListener("click", () => {
+      ["c_chf","c_htn","c_age75","c_dm","c_stroke","c_vasc","c_age65","c_sexf"]
+        .forEach(id => $(id).checked = false);
+      $("chaResult").innerHTML = `<div class="muted">Kết quả sẽ hiện ở đây.</div>`;
+    });
+
+    // Keep age checkboxes mutually sensible
+    $("c_age75").addEventListener("change", () => {
+      if($("c_age75").checked) $("c_age65").checked = false;
+    });
+    $("c_age65").addEventListener("change", () => {
+      if($("c_age65").checked) $("c_age75").checked = false;
+    });
+
+    // ===== HAS-BLED =====
+    function calcHAS(){
+      return (
+        ($("h_htn").checked ? 1 : 0) +
+        ($("h_renal").checked ? 1 : 0) +
+        ($("h_liver").checked ? 1 : 0) +
+        ($("h_stroke").checked ? 1 : 0) +
+        ($("h_bleed").checked ? 1 : 0) +
+        ($("h_inr").checked ? 1 : 0) +
+        ($("h_age").checked ? 1 : 0) +
+        ($("h_drugs").checked ? 1 : 0) +
+        ($("h_alc").checked ? 1 : 0)
+      );
+    }
+
+    function hasText(score){
+      if(score <= 1) return {cls:"ok", msg:"Nguy cơ chảy máu thấp (tham khảo)."};
+      if(score === 2) return {cls:"warn", msg:"Nguy cơ trung gian (tối ưu yếu tố nguy cơ)."};
+      return {cls:"bad", msg:"Nguy cơ cao (theo dõi sát/tối ưu yếu tố nguy cơ)."};
+    }
+
+    $("calcHasBtn").addEventListener("click", () => {
+      const s = calcHAS();
+      const t = hasText(s);
+      $("hasResult").innerHTML = `
+        <div class="big">HAS-BLED: <b>${s}</b> điểm</div>
+        <div class="tag ${t.cls}" style="margin-top:10px;">${t.msg}</div>
+        <div class="muted" style="margin-top:10px;">
+          HAS-BLED giúp nhận diện yếu tố nguy cơ có thể can thiệp (HA, thuốc kèm, rượu, INR…).
+        </div>
+      `;
+    });
+
+    $("resetHasBtn").addEventListener("click", () => {
+      ["h_htn","h_renal","h_liver","h_stroke","h_bleed","h_inr","h_age","h_drugs","h_alc"]
+        .forEach(id => $(id).checked = false);
+      $("hasResult").innerHTML = `<div class="muted">Kết quả sẽ hiện ở đây.</div>`;
+    });
+
+    // Initial
+    renderAuth();
   </script>
 </body>
 </html>
