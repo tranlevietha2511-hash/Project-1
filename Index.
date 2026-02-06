@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sao cũng được</title>
+  <meta name="description" content="Một trang web tối giản với dòng chữ 'sao cũng được'." />
+
+  <style>
+    :root{
+      --bg1: #0b1020;
+      --bg2: #0a1a3a;
+      --fg:  rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --card: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.12);
+      --glow1: rgba(124, 92, 255, .55);
+      --glow2: rgba(0, 212, 255, .45);
+    }
+
+    *{ box-sizing: border-box; }
+    html, body{ height: 100%; }
+    body{
+      margin: 0;
+      color: var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      overflow: hidden;
+      background:
+        radial-gradient(1200px 700px at 15% 20%, rgba(124,92,255,.18), transparent 60%),
+        radial-gradient(900px 600px at 85% 30%, rgba(0,212,255,.14), transparent 60%),
+        linear-gradient(140deg, var(--bg1), var(--bg2));
+    }
+
+    /* subtle moving noise */
+    .noise{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .08;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      animation: drift 10s linear infinite;
+      mix-blend-mode: overlay;
+    }
+    @keyframes drift{
+      from{ transform: translate3d(0,0,0); }
+      to{ transform: translate3d(-120px,-120px,0); }
+    }
+
+    /* floating blobs */
+    .blob{
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: .75;
+      transform: translate(-50%,-50%);
+      animation: float 10s ease-in-out infinite;
+    }
+    .blob.one{ left: 18%; top: 65%; background: var(--glow1); animation-duration: 11s; }
+    .blob.two{ left: 78%; top: 35%; background: var(--glow2); animation-duration: 13s; }
+    @keyframes float{
+      0%,100%{ transform: translate(-50%,-50%) scale(1); }
+      50%{ transform: translate(-50%,-52%) scale(1.08); }
+    }
+
+    .wrap{
+      position: relative;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 32px 18px;
+    }
+
+    .card{
+      width: min(820px, 92vw);
+      padding: clamp(22px, 4vw, 44px);
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border: 1px solid var(--stroke);
+      box-shadow:
+        0 18px 60px rgba(0,0,0,.38),
+        0 0 0 1px rgba(255,255,255,.05) inset;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(500px 180px at 20% 0%, rgba(124,92,255,.18), transparent 60%),
+        radial-gradient(500px 180px at 80% 100%, rgba(0,212,255,.14), transparent 60%);
+      opacity: .9;
+      pointer-events:none;
+    }
+
+    h1{
+      margin: 0;
+      font-size: clamp(44px, 7vw, 86px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      text-align: center;
+      position: relative;
+      text-shadow: 0 10px 40px rgba(0,0,0,.45);
+    }
+
+    .subtitle{
+      margin: 14px auto 0;
+      max-width: 56ch;
+      text-align: center;
+      font-size: clamp(14px, 2vw, 16px);
+      color: var(--muted);
+      position: relative;
+    }
+
+    .chips{
+      margin-top: 22px;
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+    }
+    .chip{
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: rgba(255,255,255,.78);
+      user-select: none;
+    }
+
+    .footer{
+      margin-top: 18px;
+      text-align: center;
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
+      position: relative;
+    }
+
+    /* nice hover tilt */
+    @media (hover:hover){
+      .card{
+        transform-style: preserve-3d;
+        transition: transform .25s ease, box-shadow .25s ease;
+      }
+      .card:hover{
+        box-shadow:
+          0 22px 70px rgba(0,0,0,.46),
+          0 0 0 1px rgba(255,255,255,.06) inset;
+      }
+    }
+
+    /* accessibility: reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      .noise, .blob{ animation: none !important; }
+      .card{ transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="noise"></div>
+  <div class="blob one"></div>
+  <div class="blob two"></div>
+
+  <main class="wrap">
+    <section class="card" id="card">
+      <h1>sao cũng được</h1>
+      <p class="subtitle">
+        Một trang web tối giản, đẹp nhẹ nhàng — chỉ để nhắc rằng đôi khi… “sao cũng được”.
+      </p>
+
+      <div class="chips" aria-hidden="true">
+        <span class="chip">Minimal</span>
+        <span class="chip">Gradient</span>
+        <span class="chip">Glass</span>
+        <span class="chip">Smooth</span>
+      </div>
+
+      <div class="footer">© <span id="y"></span> — made with calm vibes</div>
+    </section>
+  </main>
+
+  <script>
+    // year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // subtle 3D tilt based on pointer (desktop only)
+    const card = document.getElementById('card');
+    const canHover = window.matchMedia('(hover:hover)').matches;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (canHover && !reduceMotion) {
+      const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+      window.addEventListener('mousemove', (e) => {
+        const r = card.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        const dx = (e.clientX - cx) / (r.width / 2);
+        const dy = (e.clientY - cy) / (r.height / 2);
+
+        const rx = clamp((-dy) * 6, -6, 6);
+        const ry = clamp((dx) * 8, -8, 8);
+
+        card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0)`;
+      });
+
+      window.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+      });
+    }
+  </script>
+</body>
+</html>
